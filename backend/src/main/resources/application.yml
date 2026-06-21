@@ -1,0 +1,57 @@
+spring:
+  application:
+    name: emras-backend
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+
+  # ── JPA ────────────────────────────────────────────────────────────────
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+  # ── Flyway ─────────────────────────────────────────────────────────────
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  # ── Mail ───────────────────────────────────────────────────────────────
+  mail:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+# ── Actuator ─────────────────────────────────────────────────────────────
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# ── SpringDoc / Swagger ───────────────────────────────────────────────────
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: alpha
+    tagsSorter: alpha
+
+# ── App custom properties ─────────────────────────────────────────────────
+app:
+  jwt:
+    access-token-expiry-ms: 900000          # 15 minutes
+    refresh-token-expiry-ms: 604800000      # 7 days
+  ai:
+    model: claude-sonnet-4-6
+    max-tokens: 1024

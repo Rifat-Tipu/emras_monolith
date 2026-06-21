@@ -1,0 +1,46 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/emras_db
+    username: emras_user
+    password: emras_pass
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: EmrasHikariLocal
+
+  jpa:
+    hibernate:
+      ddl-auto: validate          # Flyway manages schema; Hibernate only validates
+    show-sql: true
+
+  # ── Mail (MailHog for local dev) ──────────────────────────────────────
+  mail:
+    host: localhost
+    port: 1025
+    username: ""
+    password: ""
+
+# ── CORS ─────────────────────────────────────────────────────────────────
+app:
+  cors:
+    allowed-origins:
+      - http://localhost:5173
+      - http://localhost:3000
+  jwt:
+    secret: local-super-secret-key-must-be-at-least-256-bits-long-for-hs256-algorithm
+  ai:
+    api-key: ${ANTHROPIC_API_KEY:your-api-key-here}
+
+# ── Logging ───────────────────────────────────────────────────────────────
+logging:
+  level:
+    root: INFO
+    com.emras: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr([%X{traceId}]){cyan} %clr(---){faint} %clr(%-40.40logger{39}){magenta} %clr(:){faint} %m%n%wEx"
