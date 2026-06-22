@@ -1,15 +1,42 @@
 #!/bin/bash
-# Run once after cloning/creating the repo to set up branch structure
+# ════════════════════════════════════════════════════════════════════════
+# Emras — One-time Git + GitHub setup
+# Run this ONCE after extracting the project, from the emras/ root folder.
+# ════════════════════════════════════════════════════════════════════════
 
 set -e
 
-echo "🚀 Setting up Emras Git repository..."
+REPO_NAME="emras"
+GITHUB_USER="Rifat-Tipu"
+REMOTE_URL="https://github.com/${GITHUB_USER}/${REPO_NAME}.git"
 
+echo "🚀 Setting up Emras Git repository..."
+echo ""
+echo "⚠️  BEFORE running this script, create an EMPTY repo on GitHub:"
+echo "    1. Go to https://github.com/new"
+echo "    2. Repository name: ${REPO_NAME}"
+echo "    3. Keep it EMPTY — do NOT add README/.gitignore/license"
+echo "    4. Click 'Create repository'"
+echo ""
+read -p "Press Enter once you've created the empty repo on GitHub..."
+
+# ── Init repo ──────────────────────────────────────────────────────────
 if [ ! -d ".git" ]; then
   git init
   echo "✅ Git initialized"
 fi
 
+git branch -M main
+
+# ── Connect remote ───────────────────────────────────────────────────────
+if git remote get-url origin >/dev/null 2>&1; then
+  echo "ℹ️  Remote 'origin' already set, skipping"
+else
+  git remote add origin "$REMOTE_URL"
+  echo "✅ Remote added: $REMOTE_URL"
+fi
+
+# ── Initial commit on main ───────────────────────────────────────────────
 git add .
 git commit -m "chore: initial project scaffold
 
@@ -23,19 +50,29 @@ git commit -m "chore: initial project scaffold
 - Docker Compose: PostgreSQL 18 + MailHog
 - .gitignore and .env.example"
 
-git checkout -b dev
-echo "✅ Created branch: dev"
+git push -u origin main
+echo "✅ Pushed to main"
 
-git checkout main
+# ── Create dev branch ────────────────────────────────────────────────────
+git checkout -b dev
+git push -u origin dev
+echo "✅ Created and pushed branch: dev"
+
+# ── Create first feature branch for today's work ────────────────────────
+git checkout -b feature/1.1-project-setup
+git push -u origin feature/1.1-project-setup
+echo "✅ Created and pushed branch: feature/1.1-project-setup"
+
 echo ""
-echo "✅ Branch structure ready:"
-echo "   main         ← production releases"
-echo "   dev          ← integration / staging"
-echo "   feature/*    ← cut from dev, merge back to dev"
+echo "🎉 Done! Your repo is live at:"
+echo "   https://github.com/${GITHUB_USER}/${REPO_NAME}"
 echo ""
-echo "📌 Workflow:"
-echo "   git checkout dev"
-echo "   git checkout -b feature/1.5-auth"
-echo "   # ... code ..."
-echo "   git checkout dev && git merge feature/1.5-auth"
-echo "   # When stable → merge dev into main"
+echo "✅ Branch structure:"
+echo "   main         ← production releases only"
+echo "   dev          ← integration / staging (merge features here first)"
+echo "   feature/*    ← one branch per feature, cut from dev"
+echo ""
+echo "📌 You are currently on: feature/1.1-project-setup"
+echo "   This already contains today's work and is pushed."
+echo ""
+echo "📌 Daily workflow from tomorrow onward — see push-feature.sh"

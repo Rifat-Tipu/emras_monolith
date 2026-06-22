@@ -49,13 +49,25 @@ The `local` Spring profile is active by default (see `application-local.yml`).
 - Health check: http://localhost:8080/actuator/health
 - Swagger UI:   http://localhost:8080/swagger-ui.html
 
-### 4. Set up Git branch structure
+### 4. Set up Git + GitHub (one-time)
 
 ```bash
 bash setup-git.sh
 ```
 
-Creates `main` and `dev` branches. Cut `feature/*` branches from `dev`.
+This creates an empty repo on GitHub first (you'll be prompted), then:
+- Initializes Git, pushes `main`
+- Creates and pushes `dev`
+- Creates and pushes `feature/1.1-project-setup` (today's work)
+
+### 5. Daily workflow — after finishing each feature
+
+```bash
+bash push-feature.sh "1.2-database-schema" "feat(db): add Flyway migrations for core tables"
+```
+
+This commits your work, pushes the feature branch, and merges it into `dev`.
+See `COMMIT_CONVENTION.md` for commit message style and the full Git workflow.
 
 ## Project Structure
 
