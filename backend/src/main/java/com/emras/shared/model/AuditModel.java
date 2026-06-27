@@ -15,7 +15,7 @@ import java.time.Instant;
 @Setter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseEntity {
+public abstract class AuditModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
