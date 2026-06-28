@@ -1,5 +1,4 @@
 package com.emras.shared.config;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
@@ -8,11 +7,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Optional;
-
 @Configuration
 @EnableJpaAuditing(auditorAwareRef = "auditorProvider")
 public class JpaConfig {
-
+    /**
+     * Provides the current authenticated user's email as the auditor.
+     * Injected into AuditModel's createdBy / updatedBy fields automatically.
+     */
     @Bean
     public AuditorAware<String> auditorProvider() {
         return () -> {
