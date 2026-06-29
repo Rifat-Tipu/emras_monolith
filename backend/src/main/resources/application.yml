@@ -4,6 +4,11 @@ spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
 
+  # ── Disable Flyway auto-configuration (we wire it manually in FlywayConfig.java)
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration
+
   # ── JPA ────────────────────────────────────────────────────────────────
   jpa:
     open-in-view: false
@@ -12,12 +17,6 @@ spring:
         format_sql: true
         jdbc:
           time_zone: UTC
-
-  # ── Flyway ─────────────────────────────────────────────────────────────
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
-    baseline-on-migrate: true
 
   # ── Mail ───────────────────────────────────────────────────────────────
   mail:
@@ -33,10 +32,23 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,loggers
+      base-path: /actuator
   endpoint:
     health:
       show-details: when-authorized
+    loggers:
+      enabled: true
+  info:
+    env:
+      enabled: true
+
+# ── App info shown at /actuator/info ──────────────────────────────────────
+info:
+  app:
+    name: Emras Backend
+    version: 0.0.1
+    description: Emras Clothing Store API
 
 # ── SpringDoc / Swagger ───────────────────────────────────────────────────
 springdoc:
@@ -50,8 +62,8 @@ springdoc:
 # ── App custom properties ─────────────────────────────────────────────────
 app:
   jwt:
-    access-token-expiry-ms: 900000          # 15 minutes
-    refresh-token-expiry-ms: 604800000      # 7 days
+    access-token-expiry-ms: 900000
+    refresh-token-expiry-ms: 604800000
   ai:
     model: claude-sonnet-4-6
     max-tokens: 1024

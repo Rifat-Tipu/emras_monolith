@@ -1,33 +1,31 @@
 services:
 
-  # ── PostgreSQL 18 ───────────────────────────────────────────────────────
   postgres:
     image: postgres:18-alpine
-    container_name: emras_postgres
+    container_name: emras_pg
     restart: unless-stopped
     environment:
-      POSTGRES_DB:       emras_db
+      POSTGRES_DB:       emras_monolith
       POSTGRES_USER:     emras_user
       POSTGRES_PASSWORD: emras_pass
     ports:
-      - "5432:5432"
+      - "5434:5432"
     volumes:
-      - emras_postgres_data:/var/lib/postgresql/data
+      - emras_pg_data:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U emras_user -d emras_db"]
+      test: ["CMD-SHELL", "pg_isready -U emras_user -d emras_monolith"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # ── MailHog (local email testing) ───────────────────────────────────────
   mailhog:
     image: mailhog/mailhog:latest
     container_name: emras_mailhog
     restart: unless-stopped
     ports:
-      - "1025:1025"   # SMTP
-      - "8025:8025"   # Web UI → open http://localhost:8025
+      - "1025:1025"
+      - "8025:8025"
 
 volumes:
-  emras_postgres_data:
+  emras_pg_data:
     driver: local

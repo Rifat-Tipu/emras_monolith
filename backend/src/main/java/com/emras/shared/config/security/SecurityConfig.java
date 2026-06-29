@@ -2,6 +2,7 @@ package com.emras.shared.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -10,26 +11,29 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-/**
- * Spring Security 7 (bundled with Boot 4) secures all endpoints by default.
- * This config explicitly opens public endpoints (auth, product browsing, swagger)
- * and protects everything else behind JWT authentication (added in Phase 1.5).
- *
- * NOTE: JwtAuthenticationFilter will be added once the Auth feature (1.5) is built.
- * For now this establishes the baseline so the app boots and Swagger/Actuator
- * are reachable during early development.
- */
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
+            // Auth
             "/api/v1/auth/**",
+            // Public browse endpoints
             "/api/v1/products/**",
             "/api/v1/categories/**",
+            // Swagger — all paths needed for it to work
+            "/swagger-ui.html",
             "/swagger-ui/**",
+            "/swagger-ui/index.html",
             "/api-docs/**",
-            "/actuator/health"
+            "/api-docs",
+            "/v3/api-docs/**",
+            "/webjars/**",
+            // Actuator public endpoints
+            "/actuator/health",
+            "/actuator/health/**",
+            "/actuator/info"
     };
 
     private final CorsConfigurationSource corsConfigurationSource;
@@ -41,16 +45,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource))
-            // Stateless REST API — CSRF protection is unnecessary since there are
-            // no browser-managed session cookies; auth is via JWT Bearer tokens.
-            .csrf(csrf -> csrf.disable())
-            .sessionManagement(session ->
-                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                    .anyRequest().authenticated()
-            );
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers("/actuator/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                );
 
         return http.build();
     }

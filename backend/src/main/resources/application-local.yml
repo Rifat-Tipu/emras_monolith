@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/emras_db
+    url: jdbc:postgresql://localhost:5434/emras_monolith
     username: emras_user
     password: emras_pass
     hikari:
@@ -13,17 +13,16 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate          # Flyway manages schema; Hibernate only validates
+      ddl-auto: none
     show-sql: true
 
-  # ── Mail (MailHog for local dev) ──────────────────────────────────────
+
   mail:
     host: localhost
     port: 1025
     username: ""
     password: ""
 
-# ── CORS ─────────────────────────────────────────────────────────────────
 app:
   cors:
     allowed-origins:
@@ -34,7 +33,6 @@ app:
   ai:
     api-key: ${ANTHROPIC_API_KEY:your-api-key-here}
 
-# ── Logging ───────────────────────────────────────────────────────────────
 logging:
   level:
     root: INFO
@@ -42,5 +40,16 @@ logging:
     org.springframework.security: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.orm.jdbc.bind: TRACE
-  pattern:
-    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr([%X{traceId}]){cyan} %clr(---){faint} %clr(%-40.40logger{39}){magenta} %clr(:){faint} %m%n%wEx"
+    org.flywaydb: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,loggers
+  endpoint:
+    health:
+      show-details: always
+  health:
+    mail:
+      enabled: false

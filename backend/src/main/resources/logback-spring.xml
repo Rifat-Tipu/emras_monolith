@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="emras"/>
-    <springProperty scope="context" name="ACTIVE_PROFILE" source="spring.profiles.active" defaultValue="local"/>
+    <springProperty scope="context" name="APP_NAME"
+                    source="spring.application.name" defaultValue="emras"/>
 
-    <!-- ── Console appender ────────────────────────────────────────────── -->
+    <!-- ── Console appender (no %clr — removed in Boot 4) ─────────────── -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr([%X{traceId:-NO_TRACE}]){cyan} %clr(---){faint} %clr(%-40.40logger{39}){magenta} %clr(:){faint} %m%n%wEx</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %5p [%X{traceId:-NO_TRACE}] --- %-40.40logger{39} : %m%n%ex</pattern>
             <charset>UTF-8</charset>
         </encoder>
     </appender>
@@ -14,16 +14,14 @@
     <!-- ── Rolling file appender ───────────────────────────────────────── -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/emras.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>logs/emras.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>50MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxFileSize>50MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId:-NO_TRACE}] [%X{userId:-anonymous}] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId:-NO_TRACE}] [%X{userId:-anonymous}] %-5level %logger{36} - %m%n%ex</pattern>
             <charset>UTF-8</charset>
         </encoder>
     </appender>
@@ -36,14 +34,20 @@
     </appender>
 
     <!-- ── Logger levels ────────────────────────────────────────────────── -->
-    <logger name="com.emras"                    level="DEBUG" additivity="false">
+    <logger name="com.emras" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="ASYNC_FILE"/>
     </logger>
-    <logger name="org.springframework.security" level="INFO"  additivity="false">
+
+    <logger name="org.springframework.security" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
-    <logger name="org.hibernate.SQL"            level="WARN"  additivity="false">
+
+    <logger name="org.hibernate.SQL" level="WARN" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <logger name="org.flywaydb" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
 
@@ -51,4 +55,5 @@
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="ASYNC_FILE"/>
     </root>
+
 </configuration>
