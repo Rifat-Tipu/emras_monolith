@@ -5,12 +5,10 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class CacheConfig {
-
     // ── Cache name constants ─────────────────────────────────────────────
     public static final String PRODUCTS        = "products";
     public static final String PRODUCT_DETAIL  = "product-detail";
@@ -18,7 +16,6 @@ public class CacheConfig {
     public static final String FEATURED        = "featured";
     public static final String SEARCH_RESULTS  = "search-results";
     public static final String SITE_CONFIG     = "site-config";
-
     @Bean
     public CacheManager cacheManager() {
         CaffeineCacheManager manager = new CaffeineCacheManager();
@@ -30,7 +27,6 @@ public class CacheConfig {
         manager.registerCustomCache(SITE_CONFIG,    buildCache(30, 10));
         return manager;
     }
-
     /**
      * @param ttlMinutes  time-to-live in minutes
      * @param maxSize     max number of entries
