@@ -1,13 +1,11 @@
 package com.emras.product.dto.response;
-
 import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
-
 /**
- * Lightweight product+variant projection exposed via ProductFacade.
- * Used by cart items, order line items, AI response cards.
+ * Lightweight product projection used by ProductFacade.
+ * Used by cart items, order line items, and AI responses.
  */
 @Getter
 @Builder
