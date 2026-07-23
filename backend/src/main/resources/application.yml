@@ -4,12 +4,10 @@ spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
 
-  # ── Disable Flyway auto-configuration (we wire it manually in FlywayConfig.java)
   autoconfigure:
     exclude:
       - org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration
 
-  # ── JPA ────────────────────────────────────────────────────────────────
   jpa:
     open-in-view: false
     properties:
@@ -18,7 +16,6 @@ spring:
         jdbc:
           time_zone: UTC
 
-  # ── Mail ───────────────────────────────────────────────────────────────
   mail:
     properties:
       mail:
@@ -27,7 +24,6 @@ spring:
           starttls:
             enable: true
 
-# ── Actuator ─────────────────────────────────────────────────────────────
 management:
   endpoints:
     web:
@@ -43,14 +39,12 @@ management:
     env:
       enabled: true
 
-# ── App info shown at /actuator/info ──────────────────────────────────────
 info:
   app:
     name: Emras Backend
     version: 0.0.1
     description: Emras Clothing Store API
 
-# ── SpringDoc / Swagger ───────────────────────────────────────────────────
 springdoc:
   api-docs:
     path: /api-docs
@@ -59,7 +53,6 @@ springdoc:
     operationsSorter: alpha
     tagsSorter: alpha
 
-# ── App custom properties ─────────────────────────────────────────────────
 app:
   jwt:
     access-token-expiry-ms: 900000

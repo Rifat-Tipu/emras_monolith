@@ -3,7 +3,7 @@
     <springProperty scope="context" name="APP_NAME"
                     source="spring.application.name" defaultValue="emras"/>
 
-    <!-- ── Console appender (no %clr — removed in Boot 4) ─────────────── -->
+    <!-- ── Console appender ─────────────────────────────────────────────── -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %5p [%X{traceId:-NO_TRACE}] --- %-40.40logger{39} : %m%n%ex</pattern>
@@ -11,7 +11,7 @@
         </encoder>
     </appender>
 
-    <!-- ── Rolling file appender ───────────────────────────────────────── -->
+    <!-- ── Rolling file appender ────────────────────────────────────────── -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/emras.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
@@ -26,14 +26,14 @@
         </encoder>
     </appender>
 
-    <!-- ── Async wrapper for file ───────────────────────────────────────── -->
+    <!-- ── Async wrapper ────────────────────────────────────────────────── -->
     <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
         <queueSize>512</queueSize>
         <discardingThreshold>0</discardingThreshold>
         <appender-ref ref="FILE"/>
     </appender>
 
-    <!-- ── Logger levels ────────────────────────────────────────────────── -->
+    <!-- ── Logger levels ─────────────────────────────────────────────────── -->
     <logger name="com.emras" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="ASYNC_FILE"/>
