@@ -3,6 +3,9 @@ import com.emras.category.model.Category;
 import com.emras.shared.model.AuditModel;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +45,7 @@ public class Product extends AuditModel {
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
     @Builder.Default
     private List<ProductImage> images = new ArrayList<>();
     @OneToMany(mappedBy = "product",
