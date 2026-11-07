@@ -6,12 +6,15 @@ import com.emras.cart.dto.request.UpdateCartItemRequest;
 import com.emras.cart.dto.response.CartItemResponse;
 import com.emras.cart.dto.response.CartResponse;
 import com.emras.cart.dto.response.CartSummaryResponse;
+import com.emras.cart.dto.response.PromoValidationResponse;
 import com.emras.cart.facade.CartFacade;
 import com.emras.cart.model.Cart;
 import com.emras.cart.model.CartItem;
 import com.emras.cart.repository.CartItemRepository;
 import com.emras.cart.repository.CartRepository;
 import com.emras.cart.service.CartService;
+import com.emras.payment.model.PromoCode;
+import com.emras.payment.repository.PromoCodeRepository;
 import com.emras.product.dto.response.ProductSummaryResponse;
 import com.emras.product.facade.ProductFacade;
 import com.emras.product.repository.ProductVariantRepository;
@@ -49,6 +52,7 @@ public class CartServiceImpl implements CartService, CartFacade {
     private final UserRepository     userRepository;
     private final ProductFacade      productFacade;
     private final ProductVariantRepository variantRepository;
+    private final PromoCodeRepository promoCodeRepository;
 
     // ── Get cart ──────────────────────────────────────────────────────────
 
@@ -314,5 +318,43 @@ public class CartServiceImpl implements CartService, CartFacade {
         return variantRepository.findById(variantId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         ErrorMessages.VARIANT_NOT_FOUND));
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public PromoValidationResponse validatePromo(Long userId, String code) {
+        Cart cart = getOrCreateCart(userId);
+
+        BigDecimal subtotal = cart.getItems().stream()
+                .map(CartItem::getLineTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        PromoCode promo = promoCodeRepository
+                .findByCodeIgnoreCase(code)
+                .orElseThrow(() -> new BusinessException(
+                        ErrorMessages.PROMO_CODE_INVALID,
+                        ErrorMessages.Code.PROMO_CODE_INVALID,
+                        HttpStatus.BAD_REQUEST
+                ));
+
+        if (!promo.isApplicable(subtotal)) {
+            throw new BusinessException(
+                    ErrorMessages.PROMO_MIN_ORDER_NOT_MET,
+                    ErrorMessages.Code.PROMO_MIN_ORDER_NOT_MET,
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+
+        BigDecimal discount  = promo.calculateDiscount(subtotal);
+        BigDecimal finalTotal = subtotal.subtract(discount);
+
+        return PromoValidationResponse.builder()
+                .code(promo.getCode())
+                .discountType(promo.getDiscountType().name())
+                .discountValue(promo.getDiscountValue())
+                .discountAmount(discount)
+                .originalSubtotal(subtotal)
+                .finalSubtotal(finalTotal)
+                .message("Promo code applied! You save ৳" + discount)
+                .build();
     }
 }

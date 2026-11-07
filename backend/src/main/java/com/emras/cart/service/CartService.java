@@ -3,6 +3,7 @@ package com.emras.cart.service;
 import com.emras.cart.dto.request.AddToCartRequest;
 import com.emras.cart.dto.request.UpdateCartItemRequest;
 import com.emras.cart.dto.response.CartResponse;
+import com.emras.cart.dto.response.PromoValidationResponse;
 
 public interface CartService {
 
@@ -15,4 +16,5 @@ public interface CartService {
     CartResponse removeItem(Long userId, Long cartItemId);
 
     void clearCart(Long userId);
+    PromoValidationResponse validatePromo(Long userId, String code);
 }

@@ -1,8 +1,10 @@
 package com.emras.cart.controller;
 
 import com.emras.cart.dto.request.AddToCartRequest;
+import com.emras.cart.dto.request.ApplyPromoRequest;
 import com.emras.cart.dto.request.UpdateCartItemRequest;
 import com.emras.cart.dto.response.CartResponse;
+import com.emras.cart.dto.response.PromoValidationResponse;
 import com.emras.cart.service.CartService;
 import com.emras.shared.constant.ApiConstants;
 import com.emras.shared.constant.SuccessMessages;
@@ -68,5 +70,14 @@ public class CartController {
         cartService.clearCart(user.getId());
         return ResponseEntity.ok(ApiResponse.success(
                 SuccessMessages.CART_CLEARED, HttpStatus.OK));
+    }
+    @PostMapping("/promo")
+    public ResponseEntity<ApiResponse<PromoValidationResponse>> applyPromo(
+            @AuthenticationPrincipal User user,
+            @Valid @RequestBody ApplyPromoRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(
+                SuccessMessages.PROMO_APPLIED,
+                cartService.validatePromo(user.getId(), request.getCode()),
+                HttpStatus.OK));
     }
 }
